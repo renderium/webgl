@@ -1,5 +1,5 @@
 <h1 align="center">Renderium WebGL</h1>
-<h4 align="center">WebGL renderer for renderium
+<h4 align="center">WebGL renderer for renderium</h4>
 <p align="center">
   <a href="https://www.npmjs.com/package/broadsw0rd/templates" target="_blank">
     <img src="https://img.shields.io/npm/v/renderium/webgl.svg" alt="NPM version" target="_blank"></img>
