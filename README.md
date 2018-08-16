@@ -31,7 +31,7 @@
 npm install --save @renderium/webgl
 ```
 
-or download [dev](https://unpkg.com/renderium/webgl/dist/templates.umd.js) or [prod](https://unpkg.com/renderium/webgl/dist/templates.min.js) version
+or download [dev](https://unpkg.com/renderium/webgl/dist/webgl.umd.js) or [prod](https://unpkg.com/renderium/webgl/dist/webgl.min.js) version
 
 ## Usage
 
