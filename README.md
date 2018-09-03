@@ -1,8 +1,8 @@
 <h1 align="center">Renderium WebGL</h1>
 <h4 align="center">WebGL renderer for renderium</h4>
 <p align="center">
-  <a href="https://www.npmjs.com/package/renderium/webgl" target="_blank">
-    <img src="https://img.shields.io/npm/v/renderium/webgl.svg" alt="NPM version" target="_blank"></img>
+  <a href="https://www.npmjs.com/package/@renderium/webgl" target="_blank">
+    <img src="https://img.shields.io/npm/v/@renderium/webgl.svg" alt="NPM version" target="_blank"></img>
   </a>
   <a href="https://travis-ci.org/renderium/webgl" target="_blank">
     <img src="https://travis-ci.org/renderium/webgl.svg?branch=master" alt="Build Status" target="_blank"></img>

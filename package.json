@@ -1,0 +1,42 @@
+{
+  "name": "@renderium/webgl",
+  "version": "0.0.1",
+  "description": "Webgl renderer for renderium",
+  "keywords": [
+    "webgl",
+    "renderer"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/renderium/webgl",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/renderium/webgl"
+  },
+  "bugs": {
+    "url": "https://github.com/renderium/webgl/issues",
+    "email": "broadsw.rd@yandex.ru"
+  },
+  "author": {
+    "name": "Vladimir Bykov",
+    "email": "broadsw.rd@yandex.ru",
+    "url": "https://github.com/broadsw0rd"
+  },
+  "files": [
+    "dist"
+  ],
+  "umd": "dist/webgl.umd.js",
+  "main": "dist/webgl.cjs.js",
+  "module": "dist/webgl.js",
+  "dependencies": {},
+  "devDependencies": {
+    "rollup": "0.60.7",
+    "snazzy": "7.1.1",
+    "standard": "11.0.1",
+    "uglify-es": "3.3.9"
+  },
+  "scripts": {
+    "check": "standard src/*.js | snazzy",
+    "build": "rollup -c",
+    "min": "uglifyjs dist/webgl.umd.js -c -m > dist/webgl.min.js"
+  }
+}
