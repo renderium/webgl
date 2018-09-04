@@ -30,6 +30,7 @@
   "dependencies": {},
   "devDependencies": {
     "rollup": "0.60.7",
+    "rollup-plugin-glsl": "1.2.0",
     "snazzy": "7.1.1",
     "standard": "11.0.1",
     "uglify-es": "3.3.9"
