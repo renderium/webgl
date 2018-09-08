@@ -38,6 +38,8 @@ var queue = [];
 var webgl;
 var prevTime;
 
+var GRADIENTS_COUNT = 0xff;
+
 class Webgl {
   static digest (time) {
     prevTime = prevTime || time;
@@ -96,6 +98,18 @@ class Webgl {
       this.fragmentShader
     );
     this.gl.useProgram(this.program);
+
+    this.resolution = this.gl.getUniformLocation(this.program, 'resolution');
+
+    this.linearGradientsCache = new Map();
+    this.linearGradients = new Array(GRADIENTS_COUNT * 4);
+    for (var i = 0; i < GRADIENTS_COUNT; i++) {
+      var j = i * 4;
+      this.linearGradients[j] = this.gl.getUniformLocation(this.program, `linearGradients[${i}].start`);
+      this.linearGradients[j + 1] = this.gl.getUniformLocation(this.program, `linearGradients[${i}].end`);
+      this.linearGradients[j + 2] = this.gl.getUniformLocation(this.program, `linearGradients[${i}].from`);
+      this.linearGradients[j + 3] = this.gl.getUniformLocation(this.program, `linearGradients[${i}].to`);
+    }
   }
 
   clear () {
@@ -118,6 +132,18 @@ class Webgl {
 
   redraw (delta, elapsed) {
     this.renderer(this, delta, elapsed);
+  }
+
+  setGradient (gradient) {
+    var idx = this.linearGradientsCache.size;
+    if (this.map.has(gradient)) {
+      idx = this.map.get(gradient);
+    }
+    idx *= 4;
+    this.gl.uniform2f(this.linearGradients[idx], gradient.start.x, gradient.start.y);
+    this.gl.uniform2f(this.linearGradients[idx + 1], gradient.end.x, gradient.end.y);
+    this.gl.uniform4fv(this.linearGradients[idx + 2], gradient.from);
+    this.gl.uniform4fv(this.linearGradients[idx + 3], gradient.to);
   }
 }
 
