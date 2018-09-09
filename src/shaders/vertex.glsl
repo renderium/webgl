@@ -46,7 +46,7 @@ vec4 linearGradientColor (vec2 position) {
 }
 
 vec4 radialGradientColor () {
-  return vec4(0);
+  return vec4(radialGradient);
 }
 
 varying vec4 hue;

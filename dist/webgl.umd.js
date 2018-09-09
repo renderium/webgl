@@ -33,7 +33,7 @@
     return program
   }
 
-  var vertexShaderSource = "const vec2 unit=vec2(1,-1);struct LinearGradient{vec2 start;vec2 end;vec4 from;vec4 to;};uniform vec2 resolution;uniform LinearGradient linearGradients[255];float angleTo(vec2 one,vec2 another){return acos(dot(one,another)/(length(one)*length(another)));}vec4 clipSpace(vec2 position){return vec4((position/resolution*2.0-1.0)*unit,0,1);}attribute vec2 position;attribute vec2 center;attribute vec2 texture;attribute vec4 color;attribute float theta;attribute float linearGradient;attribute float radialGradient;vec2 rotate(){float c=cos(theta);float s=sin(theta);mat2 rotation=mat2(c,-s,s,c);vec2 diretion=position-center;return center+rotation*diretion;}vec4 linearGradientColor(vec2 position){LinearGradient gradient=linearGradients[int(linearGradient)];vec2 len=gradient.end-gradient.start;vec2 dist=position-gradient.start;float angle=angleTo(len,dist);float percents=(length(dist)*cos(angle))/length(len);return mix(gradient.from,gradient.to,percents);}vec4 radialGradientColor(){return vec4(0);}varying vec4 hue;varying vec2 texel;void main(){vec2 pos=rotate();texel=texture;hue=color+linearGradientColor(pos)+radialGradientColor();gl_Position=clipSpace(pos);}";
+  var vertexShaderSource = "const vec2 unit=vec2(1,-1);struct LinearGradient{vec2 start;vec2 end;vec4 from;vec4 to;};uniform vec2 resolution;uniform LinearGradient linearGradients[255];float angleTo(vec2 one,vec2 another){return acos(dot(one,another)/(length(one)*length(another)));}vec4 clipSpace(vec2 position){return vec4((position/resolution*2.0-1.0)*unit,0,1);}attribute vec2 position;attribute vec2 center;attribute vec2 texture;attribute vec4 color;attribute float theta;attribute float linearGradient;attribute float radialGradient;vec2 rotate(){float c=cos(theta);float s=sin(theta);mat2 rotation=mat2(c,-s,s,c);vec2 diretion=position-center;return center+rotation*diretion;}vec4 linearGradientColor(vec2 position){LinearGradient gradient=linearGradients[int(linearGradient)];vec2 len=gradient.end-gradient.start;vec2 dist=position-gradient.start;float angle=angleTo(len,dist);float percents=(length(dist)*cos(angle))/length(len);return mix(gradient.from,gradient.to,percents);}vec4 radialGradientColor(){return vec4(radialGradient);}varying vec4 hue;varying vec2 texel;void main(){vec2 pos=rotate();texel=texture;hue=color+linearGradientColor(pos)+radialGradientColor();gl_Position=clipSpace(pos);}";
 
   var fragmentShaderSource = "precision mediump float;uniform sampler2D atlas;varying vec4 hue;varying vec2 texel;void main(){gl_FragColor=hue+texture2D(atlas,texel);}";
 
@@ -90,6 +90,9 @@
       this.initProgram();
       this.initTexture();
       this.initUniforms();
+      this.initBuffers();
+      this.initAttributes();
+      this.initBlend();
     }
 
     initProgram () {
@@ -132,6 +135,95 @@
         this.linearGradients[j + 2] = this.gl.getUniformLocation(this.program, `linearGradients[${i}].from`);
         this.linearGradients[j + 3] = this.gl.getUniformLocation(this.program, `linearGradients[${i}].to`);
       }
+    }
+
+    initBuffers () {
+      var indices = this.gl.createBuffer();
+      var vertices = this.gl.createBuffer();
+
+      this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indices);
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertices);
+    }
+
+    initAttributes () {
+      var position = this.gl.getAttribLocation(this.program, 'position');
+      var center = this.gl.getAttribLocation(this.program, 'center');
+      var texture = this.gl.getAttribLocation(this.program, 'texture');
+      var color = this.gl.getAttribLocation(this.program, 'color');
+      var theta = this.gl.getAttribLocation(this.program, 'theta');
+      var linearGradient = this.gl.getAttribLocation(this.program, 'linearGradient');
+      var radialGradient = this.gl.getAttribLocation(this.program, 'radialGradient');
+
+      this.gl.enableVertexAttribArray(position);
+      this.gl.enableVertexAttribArray(center);
+      this.gl.enableVertexAttribArray(texture);
+      this.gl.enableVertexAttribArray(color);
+      this.gl.enableVertexAttribArray(theta);
+      this.gl.enableVertexAttribArray(linearGradient);
+      this.gl.enableVertexAttribArray(radialGradient);
+
+      this.gl.vertexAttribPointer(
+        position,
+        2,
+        this.gl.SHORT,
+        false,
+        20,
+        0
+      );
+      this.gl.vertexAttribPointer(
+        center,
+        2,
+        this.gl.SHORT,
+        false,
+        20,
+        4
+      );
+      this.gl.vertexAttribPointer(
+        texture,
+        2,
+        this.gl.UNSIGNED_SHORT,
+        false,
+        20,
+        8
+      );
+      this.gl.vertexAttribPointer(
+        color,
+        4,
+        this.gl.UNSIGNED_BYTE,
+        true,
+        20,
+        12
+      );
+      this.gl.vertexAttribPointer(
+        theta,
+        1,
+        this.gl.SHORT,
+        true,
+        20,
+        16
+      );
+      this.gl.vertexAttribPointer(
+        linearGradient,
+        1,
+        this.gl.UNSIGNED_BYTE,
+        false,
+        20,
+        18
+      );
+      this.gl.vertexAttribPointer(
+        radialGradient,
+        1,
+        this.gl.UNSIGNED_BYTE,
+        false,
+        20,
+        19
+      );
+    }
+
+    initBlend () {
+      // https://limnu.com/webgl-blending-youre-probably-wrong/
+      this.gl.enable(this.gl.BLEND);
+      this.gl.blendFuncSeparate(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA, this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
     }
 
     clear () {
