@@ -26,6 +26,7 @@ attribute vec2 texture;
 attribute vec4 color;
 attribute float theta;
 attribute float linearGradient;
+attribute float radialGradient;
 
 vec2 rotate () {
   float c = cos(theta);
@@ -44,12 +45,16 @@ vec4 linearGradientColor (vec2 position) {
   return mix(gradient.from, gradient.to, percents);
 }
 
+vec4 radialGradientColor () {
+  return vec4(0);
+}
+
 varying vec4 hue;
 varying vec2 texel;
 
 void main () {
   vec2 pos = rotate();
   texel = texture;
-  hue = color + linearGradientColor(pos);
+  hue = color + linearGradientColor(pos) + radialGradientColor();
   gl_Position = clipSpace(pos);
 }
