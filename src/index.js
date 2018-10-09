@@ -100,6 +100,13 @@ class Webgl {
       this.linearGradients[j + 2] = this.gl.getUniformLocation(this.program, `linearGradients[${i}].from`)
       this.linearGradients[j + 3] = this.gl.getUniformLocation(this.program, `linearGradients[${i}].to`)
     }
+    this.defaultLinearGradient = {
+      start: { x: 0, y: 0},
+      end: { x: 0, y: 0 },
+      from: new Float32Array(4),
+      to: new Float32Array(4)
+    }
+    this.setGradient(this.defaultLinearGradient);
   }
 
   initBuffers () {
@@ -211,6 +218,9 @@ class Webgl {
       this.canvas.height = this.height * pixelRatio
       this.gl.viewport(0, 0, this.width * pixelRatio, this.height * pixelRatio)
       this.gl.uniform2f(this.resolution, this.width, this.height)
+      this.defaultLinearGradient.end.x = this.width
+      this.defaultLinearGradient.end.y = this.height
+      this.setGradient(this.defaultLinearGradient);
     }
   }
 
@@ -220,8 +230,8 @@ class Webgl {
 
   setGradient (gradient) {
     var idx = this.linearGradientsCache.size
-    if (this.map.has(gradient)) {
-      idx = this.map.get(gradient)
+    if (this.linearGradientsCache.has(gradient)) {
+      idx = this.linearGradientsCache.get(gradient)
     }
     idx *= 4
     this.gl.uniform2f(this.linearGradients[idx], gradient.start.x, gradient.start.y)

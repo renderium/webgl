@@ -29,7 +29,7 @@ function createProgram (gl, vertexShader, fragmentShader) {
   return program
 }
 
-var vertexShaderSource = "const vec2 unit=vec2(1,-1);struct LinearGradient{vec2 start;vec2 end;vec4 from;vec4 to;};uniform vec2 resolution;uniform LinearGradient linearGradients[255];float angleTo(vec2 one,vec2 another){return acos(dot(one,another)/(length(one)*length(another)));}vec4 clipSpace(vec2 position){return vec4((position/resolution*2.0-1.0)*unit,0,1);}attribute vec2 position;attribute vec2 center;attribute vec2 texture;attribute vec4 color;attribute float theta;attribute float linearGradient;attribute float radialGradient;vec2 rotate(){float c=cos(theta);float s=sin(theta);mat2 rotation=mat2(c,-s,s,c);vec2 diretion=position-center;return center+rotation*diretion;}vec4 linearGradientColor(vec2 position){LinearGradient gradient=linearGradients[int(linearGradient)];vec2 len=gradient.end-gradient.start;vec2 dist=position-gradient.start;float angle=angleTo(len,dist);float percents=(length(dist)*cos(angle))/length(len);return mix(gradient.from,gradient.to,clamp(percents,0.0,1.0));}vec4 radialGradientColor(){return vec4(radialGradient);}varying vec4 hue;varying vec2 texel;void main(){vec2 pos=rotate();texel=texture;hue=color+linearGradientColor(pos)+radialGradientColor();gl_Position=clipSpace(pos);}";
+var vertexShaderSource = "const vec2 unit=vec2(1,-1);struct LinearGradient{vec2 start;vec2 end;vec4 from;vec4 to;};uniform vec2 resolution;uniform LinearGradient linearGradients[255];float angleTo(vec2 one,vec2 another){return acos(dot(one,another)/(length(one)*length(another)));}vec4 clipSpace(vec2 position){return vec4((position/resolution*2.0-1.0)*unit,0,1);}attribute vec2 position;attribute vec2 center;attribute vec2 texture;attribute vec4 color;attribute float theta;attribute float linearGradient;attribute float radialGradient;vec2 rotate(){float c=cos(theta);float s=sin(theta);mat2 rotation=mat2(c,-s,s,c);vec2 diretion=position-center;return center+rotation*diretion;}vec4 linearGradientColor(vec2 position){LinearGradient gradient=linearGradients[int(linearGradient)];vec2 len=gradient.end-gradient.start;vec2 dist=position-gradient.start;float angle=angleTo(len,dist);float percents=(length(dist)*cos(angle))/length(len);return mix(gradient.from,gradient.to,percents);}vec4 radialGradientColor(){return vec4(radialGradient);}varying vec4 hue;varying vec2 texel;void main(){vec2 pos=rotate();texel=texture;hue=color+linearGradientColor(pos)+radialGradientColor();gl_Position=clipSpace(pos);}";
 
 var fragmentShaderSource = "precision mediump float;uniform sampler2D atlas;varying vec4 hue;varying vec2 texel;void main(){gl_FragColor=hue+texture2D(atlas,texel);}";
 
@@ -131,6 +131,13 @@ class Webgl {
       this.linearGradients[j + 2] = this.gl.getUniformLocation(this.program, `linearGradients[${i}].from`);
       this.linearGradients[j + 3] = this.gl.getUniformLocation(this.program, `linearGradients[${i}].to`);
     }
+    this.defaultLinearGradient = {
+      start: { x: 0, y: 0},
+      end: { x: 0, y: 0 },
+      from: new Float32Array(4),
+      to: new Float32Array(4)
+    };
+    this.setGradient(this.defaultLinearGradient);
   }
 
   initBuffers () {
@@ -242,6 +249,9 @@ class Webgl {
       this.canvas.height = this.height * pixelRatio;
       this.gl.viewport(0, 0, this.width * pixelRatio, this.height * pixelRatio);
       this.gl.uniform2f(this.resolution, this.width, this.height);
+      this.defaultLinearGradient.end.x = this.width;
+      this.defaultLinearGradient.end.y = this.height;
+      this.setGradient(this.defaultLinearGradient);
     }
   }
 
@@ -251,8 +261,8 @@ class Webgl {
 
   setGradient (gradient) {
     var idx = this.linearGradientsCache.size;
-    if (this.map.has(gradient)) {
-      idx = this.map.get(gradient);
+    if (this.linearGradientsCache.has(gradient)) {
+      idx = this.linearGradientsCache.get(gradient);
     }
     idx *= 4;
     this.gl.uniform2f(this.linearGradients[idx], gradient.start.x, gradient.start.y);
