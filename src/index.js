@@ -108,6 +108,9 @@ class Webgl {
 
     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indices)
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertices)
+
+    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new ArrayBuffer(256), this.gl.DYNAMIC_DRAW)
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new ArrayBuffer(256), this.gl.DYNAMIC_DRAW)
   }
 
   initAttributes () {
@@ -204,6 +207,8 @@ class Webgl {
       this.height = height
       this.canvas.style.width = `${this.width}px`
       this.canvas.style.height = `${this.height}px`
+      this.canvas.width = this.width * pixelRatio
+      this.canvas.height = this.height * pixelRatio
       this.gl.viewport(0, 0, this.width * pixelRatio, this.height * pixelRatio)
       this.gl.uniform2f(this.resolution, this.width, this.height)
     }

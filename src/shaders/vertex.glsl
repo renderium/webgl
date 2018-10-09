@@ -42,7 +42,7 @@ vec4 linearGradientColor (vec2 position) {
   vec2 dist = position - gradient.start;
   float angle = angleTo(len, dist);
   float percents = (length(dist) * cos(angle)) / length(len);
-  return mix(gradient.from, gradient.to, percents);
+  return mix(gradient.from, gradient.to, clamp(percents, 0.0, 1.0));
 }
 
 vec4 radialGradientColor () {
